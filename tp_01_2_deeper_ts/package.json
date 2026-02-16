@@ -1,0 +1,17 @@
+{
+  "name": "tp_01_2_deeper_ts",
+  "version": "1.0.0",
+  "description": "TP Approfondissement TypeScript",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "keywords": ["typescript", "enums", "generics", "classes"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}
