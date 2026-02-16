@@ -4,11 +4,11 @@ class Playlist {
   public nom : string = "MonPlaylist";
   private titres : Chanson[] = [];
 
-  public ajoutChanson(chanson: Chanson) : void {
+  public ajouter(chanson: Chanson) : void {
     this.titres.push(chanson);
   }
 
-  public supprimerMusique(index: number) : boolean {
+  public supprimer(index: number) : boolean {
     if (index < 0 || index >= this.titres.length) {
       console.error("Index hors limites");
       return false;
@@ -33,7 +33,7 @@ class Playlist {
 
   }
 
-  public obtenirDurationTotale() : number {
+  public obtenirDureeTotale() : number {
     let total: number = 0;
     this.titres.forEach(chanson => {
       total = total + chanson.duree;
