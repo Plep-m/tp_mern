@@ -1,8 +1,12 @@
 import { Chanson } from "./Types";
 
-class Playlist {
-  public nom : string = "MonPlaylist";
+export class Playlist {
+  public nom : string;
   private titres : Chanson[] = [];
+
+  constructor(nom: string) {
+    this.nom = nom;
+  }
 
   public ajouter(chanson: Chanson) : void {
     this.titres.push(chanson);
