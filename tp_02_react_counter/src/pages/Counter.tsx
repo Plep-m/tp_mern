@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 
 function Counter(): React.JSX.Element {
-  const [count, setCount]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
+  const [count, setCount]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(() => {
+    const saved = localStorage.getItem('counterValue');
+    return saved ? parseInt(saved) : 0;
+  });
 
   useEffect(() => {
-    console.log('Counter mounted')
-  }, [])
+    console.log('Counter mounted');
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('counterValue', count.toString());
+    console.log('Counter value saved:', count);
+  }, [count]);
   
   const increment = (): void => {
     setCount(count + 1);
