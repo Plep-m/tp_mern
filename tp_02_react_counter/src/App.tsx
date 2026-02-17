@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Counter from './pages/Counter';
 import MouseFollower from './pages/MouseFollower';
 import Library from './pages/Library';
+import Tasks from './pages/Tasks';
 
 function App(): React.JSX.Element {
   return (
@@ -11,7 +12,8 @@ function App(): React.JSX.Element {
         backgroundColor: '#f0f0f0', 
         display: 'flex', 
         gap: '20px',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexWrap: 'wrap'
       }}>
         <Link to="/" style={{ textDecoration: 'none', color: '#3498db', fontSize: '18px' }}>
           Compteur
@@ -22,12 +24,16 @@ function App(): React.JSX.Element {
         <Link to="/library" style={{ textDecoration: 'none', color: '#3498db', fontSize: '18px' }}>
           Bibliothèque
         </Link>
+        <Link to="/tasks" style={{ textDecoration: 'none', color: '#3498db', fontSize: '18px' }}>
+          Tâches
+        </Link>
       </nav>
 
       <Routes>
         <Route path="/" element={<Counter />} />
         <Route path="/mouse" element={<MouseFollower />} />
         <Route path="/library" element={<Library />} />
+        <Route path="/tasks" element={<Tasks />} />
       </Routes>
     </BrowserRouter>
   );

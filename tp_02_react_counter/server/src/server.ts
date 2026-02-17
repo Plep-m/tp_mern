@@ -15,8 +15,20 @@ interface Book {
   author: string;
 }
 
+interface Task {
+  id: number;
+  label: string;
+  isDone: boolean;
+}
+
 let books: Book[] = [
   { id: 1, title: 'Express pour les nuls', author: 'Node JS' }
+];
+
+let tasks: Task[] = [
+  { id: 1, label: 'Apprendre React', isDone: true },
+  { id: 2, label: 'Maîtriser TypeScript', isDone: false },
+  { id: 3, label: 'Créer une API REST', isDone: false }
 ];
 
 app.get('/', (req: Request, res: Response): void => {
@@ -55,6 +67,54 @@ app.delete('/api/books/:id', (req: Request<BookParams>, res: Response): void => 
     res.json({ message: 'Book deleted successfully' });
   } else {
     res.status(404).json({ message: 'Book not found' });
+  }
+});
+
+app.get('/api/tasks', (req: Request, res: Response): void => {
+  res.json(tasks);
+});
+
+app.post('/api/tasks', (req: Request, res: Response): void => {
+  const { label } = req.body;
+  
+  const newTask: Task = {
+    id: Date.now(),
+    label,
+    isDone: false
+  };
+  
+  tasks.push(newTask);
+  res.status(201).json(newTask);
+});
+
+interface TaskParams {
+  id: string;
+}
+
+app.patch('/api/tasks/:id', (req: Request<TaskParams>, res: Response): void => {
+  const id = parseInt(req.params.id);
+  const { isDone } = req.body;
+  
+  const task = tasks.find(t => t.id === id);
+  
+  if (task) {
+    task.isDone = isDone;
+    res.json(task);
+  } else {
+    res.status(404).json({ message: 'Task not found' });
+  }
+});
+
+app.delete('/api/tasks/:id', (req: Request<TaskParams>, res: Response): void => {
+  const id = parseInt(req.params.id);
+  const initialLength = tasks.length;
+  
+  tasks = tasks.filter(task => task.id !== id);
+  
+  if (tasks.length < initialLength) {
+    res.json({ message: 'Task deleted successfully' });
+  } else {
+    res.status(404).json({ message: 'Task not found' });
   }
 });
 

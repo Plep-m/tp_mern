@@ -9,6 +9,9 @@ interface Book {
 
 function Library(): React.JSX.Element {
   const [books, setBooks]: [Book[], React.Dispatch<React.SetStateAction<Book[]>>] = useState<Book[]>([]);
+  const [isLoading, setIsLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  
   const [newTitle, setNewTitle]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>('');
   const [newAuthor, setNewAuthor]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>('');
 
@@ -19,11 +22,28 @@ function Library(): React.JSX.Element {
 
   const fetchBooks = async (): Promise<void> => {
     try {
+      setError(null);
+      setIsLoading(true);
+      
       const response = await fetch('http://localhost:3001/api/books');
+      
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+      
       const data: Book[] = await response.json();
       setBooks(data);
-    } catch (error) {
-      console.error('Error fetching books:', error);
+      
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Une erreur inconnue est survenue');
+      }
+      console.error('Error fetching books:', err);
+      
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,29 +62,106 @@ function Library(): React.JSX.Element {
         body: JSON.stringify({ title: newTitle, author: newAuthor }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
       const newBook: Book = await response.json();
       setBooks([...books, newBook]);
       setNewTitle('');
       setNewAuthor('');
+      
     } catch (error) {
       console.error('Error adding book:', error);
+      alert('Erreur lors de l\'ajout du livre');
     }
   };
 
   const deleteBook = async (id: number): Promise<void> => {
     try {
-      await fetch(`http://localhost:3001/api/books/${id}`, {
+      const response = await fetch(`http://localhost:3001/api/books/${id}`, {
         method: 'DELETE',
       });
+      
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+      
       setBooks(books.filter(book => book.id !== id));
+      
     } catch (error) {
       console.error('Error deleting book:', error);
+      alert('Erreur lors de la suppression du livre');
     }
   };
 
+  if (isLoading) {
+    return (
+      <div style={{ 
+        textAlign: 'center', 
+        marginTop: '50px', 
+        fontSize: '20px',
+        color: '#3498db'
+      }}>
+        <div style={{ 
+          display: 'inline-block',
+          width: '40px',
+          height: '40px',
+          border: '4px solid #f3f3f3',
+          borderTop: '4px solid #3498db',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <p>Chargement de la bibliothèque...</p>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ 
+        textAlign: 'center', 
+        marginTop: '50px',
+        fontFamily: 'Arial'
+      }}>
+        <div style={{
+          backgroundColor: '#ffe6e6',
+          border: '2px solid #e74c3c',
+          borderRadius: '8px',
+          padding: '20px',
+          margin: '20px auto',
+          maxWidth: '500px'
+        }}>
+          <h2 style={{ color: '#e74c3c', margin: '0 0 10px 0' }}>❌ Erreur</h2>
+          <p style={{ margin: '0', color: '#333' }}>{error}</p>
+          <button 
+            onClick={fetchBooks}
+            style={{
+              marginTop: '15px',
+              padding: '10px 20px',
+              backgroundColor: '#3498db',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ textAlign: 'center', marginTop: '30px', fontFamily: 'Arial' }}>
-      <h1>Ma Bibliothèque</h1>
+      <h1>📚 Ma Bibliothèque</h1>
 
       <div style={{ 
         backgroundColor: '#f9f9f9', 
@@ -135,7 +232,7 @@ function Library(): React.JSX.Element {
       </div>
 
       {books.length === 0 && (
-        <p style={{ color: '#999' }}>Aucun livre dans la bibliothèque. Ajoutez-en un !</p>
+        <p style={{ color: '#999' }}>Aucun livre dans la bibliothèque. Ajoutez-en un ! 📖</p>
       )}
     </div>
   );
